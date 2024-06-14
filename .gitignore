@@ -1,0 +1,11 @@
+**/MDK-ARM/.build/*
+**/MDK-ARM/MC11-WL-EVAL/*
+**/JLinkLog.txt
+**/*.Win10
+.mxproject
+*.orig
+**/JLinkSettings.ini
+**/MDK-ARM/*.uvoptx
+**/MDK-ARM/*.lst
+**/MDK-ARM/*.scvd
+**/MDK-ARM/*.Administrator
