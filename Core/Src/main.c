@@ -25,7 +25,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdio.h>
+#include "mc11.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -46,7 +47,10 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+/*打印开关print_en在MC11.h文件中定义，当前定义为0，打印功能关闭，定义为1打印功能开启*/
+int wait_time=0; 
+float F0,F1,C;//通道0/1频率值，电容值 
+uint8_t result = 0; 
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -92,13 +96,26 @@ int main(void)
   MX_I2C1_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-
+  LED_RUN1_GPIO_Port->BSRR = LED_RUN1_Pin;
+  
+  // 给MC11的SD引脚（默认上拉的）低电平，让它工作
+  SD_GPIO_Port->BSRR = SD_Pin << 16;
+  HAL_Delay(1); // 启动时间20us
+  
+  result = MC11_Init(&wait_time); //MC11初始化配置，获取测量转换时间；
+  if(!result) printf("MC11_Init failed\r\n"); 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    result = MC11_Measure(&F0,&F1,&C,wait_time); //循环测量MC11频率/电容； 
+		if(result!=0){ 
+      //printf("F0:%.3f Mhz F1:%.3f Mhz C:%.3f pF\r\n",F0, F1, C); 
+      printf("%.3f pF\n", C);
+    }
+  	HAL_Delay(200);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

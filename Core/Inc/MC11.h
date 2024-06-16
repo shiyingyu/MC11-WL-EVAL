@@ -1,19 +1,14 @@
 #ifndef __MC1112_H
 #define __MC1112_H
-#include "i2c_master.h"
-#include "stdint.h"
+
+#include <stdint.h>
 
 #define CLKIN 2.4 //MC11/12 内部参考时钟,单位Mhz
 
-#define Cref      22//通道1接22pf参比电容，如此处为其他值，请修改
+#define Cref      100//通道1接22pf参比电容，如此处为其他值，请修改
 #define Cp      10//通道0接10pf并联电容，如此处为其他值，请修改
+					
 
-#define print_en  0
-#define PR(format, ...)    if(print_en)printf(format, ##__VA_ARGS__);
-							
-
-
-extern unsigned char I2C_ADDR[4]; /* Addr 0x41 0x42 0x43*/
 typedef enum 
 {//FIN_DIV 通道震荡信号分频系数
  	FIN_DIV_0        	= 0x00,   //不分频
@@ -101,6 +96,17 @@ typedef enum
   CHIP_ID_MSB					  = 0x7E,    //默认值0x01：芯片 ID，只读
   CHIP_ID_LSB      			= 0x7F,    //默认值0x20：芯片 ID，只读
 } REG;
+/** @defgroup  
+  * I2C transaction result
+  */ 
+typedef enum 
+{
+ GPIOI2C_XFER_LASTNACK     =    ((uint8_t)0x00),   	 	/* !< No error              */
+ GPIOI2C_XFER_ADDRNACK   	=		((uint8_t)0x01) ,   	  /* !< No Device             */
+ GPIOI2C_XFER_ABORTNACK  	=		((uint8_t)0x02) ,   	  /* !< NACK before last byte */
+ GPIOI2C_XFER_LASTACK    =			((uint8_t)0x04) ,    	/* !< ACK last byte         */
+ GPIOI2C_XFER_BUSERR   =  			((uint8_t)0x10) ,    	/* !< Bus error             */
+}I2C_Trans_Type;
 
 I2C_Trans_Type MC1112_I2C_Transmit(uint8_t DeviceAddr, REG reg, uint8_t Data);
 I2C_Trans_Type MC1112_I2C_Receive(uint8_t DeviceAddr, REG reg,uint8_t *pData);
@@ -108,7 +114,7 @@ int MC11_Measure(float *F0, float *F1 ,float *C,int wait_time);
 int MC11_Filter_EN(uint8_t en);
 int MC11_Init(int *wait_time);
 void DA1_DA0(float DATA,float *Coef);
-int MC11_Reset();
+int MC11_Reset(void);
 int MC11_SetAlert(float TH , float TL);
 int MC11_SetChannel(uint8_t ch);
 int MC11_ReadReg(uint16_t temp,uint8_t *data);
